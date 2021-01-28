@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+    <title>카드 뒤집기 게임</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="js/jquery-1.12.4.js"></script>
+    <script src="js/jquery-migrate-1.4.1.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/jquery.flip.min.js"></script>
+    <script src="js/jquery.ui.touch-punch.min.js"></script>
+    <script src="js/vowles and cards.js"></script>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
+    <style>
+        .game {
+            width: 540px;
+            height: 140px;
+            border: 1px solid;
+            padding: 10px;
+            display: inline-block;
+
+        }
+
+        .button {
+            width: 100px;
+            height: 50px;
+            padding: 10px;
+        }
+
+        td {
+            width: 120px;
+            height: 120px;
+        }
+
+        .front,
+        .back {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card {
+            width: 120px;
+            height: 120px;
+            border-color: white;
+            text-align: center;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            margin-top: 10px;
+        }
+
+        .userCard,
+        .comCard {
+            width: 120px;
+            height: 120px;
+            float: left;
+            border: 1px solid;
+            margin: -3px 5px 8px 3px;
+        }
+
+        .lock {
+            pointer-events: none;
+        }
+
+        .menTable {
+            margin-left: 30px;
+            margin-top: 100px;
+            margin-bottom: 100px;
+            display: inline-table;
+        }
+        .tooltip {
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-right: 10px;
+        }
+
+        /*
+        #cards {
+            text-align: center;
+            vertical-align: middle;
+        }
+*/
+    </style>
+
+</head>
+
+
+
+<body>
+    <!--
+    16개의 카드를 랜덤으로 배치함 - O<br>
+    16개의 카드를 랜덤으로 배치함 - O<br>
+    기본적으로 카드를 뒤집으면 그 단어를 읽어준다 - O<br><br>
+    유저차례<br>
+    카드는 2개를 뒤집을 수 있고 뒤집은 다음은 그 카드가 같은 음소가 들어있는 카드인지 O,X버튼을 통해 선택(O,X 버튼은 사용할 때만 show 해준다) - O<br>
+    선택한 카드가 같은 음소가 맞을 경우 O를 선택 했을 때 드래그 기능 활성화 - O<br>
+    -드래그는 각 ㅏ,ㅗ 위치에 할 수 있고 첫 번째 칸부터 채워진다.- O<br>
+    -ㅏ,ㅘ 의 위치에 맞게 드래그를 하지 않았을 경우 다시 한번 기회를 주고 또 맞게 드래그 하지 않으면 카드가 다시 뒤집어지고 컴퓨터 턴으로 넘어간다 - O<br>
+    선택한 카드가 같은 음소가 맞을 경우 X를 선택 했을 때 카드를 다시 뒤집고 컴퓨터 턴으로 넘어간다 - O<br>
+    선택한 카드가 같은 음소가 아닐 경우 O,X를 선택했을 때 카드를 다시 뒤집고 다시 선택할 기회를 준다 - O<br><br>
+    컴퓨터차례<br>
+    컴퓨터는 랜덤으로 2개의 카드를 뒤집는다<br>
+    컴퓨터는 랜덤으로 2개의 카드를 뒤집는다<br>
+    선택한 카드가 같은 음소가 맞을 경우 각 컴퓨터 영역의 ㅏ,ㅗ로 옮겨진다.<br>
+    선택한 카드가 같은 음소아 아닐 경우 다시 뒤집고 유저 턴으로 넘어간다<br>
+    다 끝나면 게임종료<br>
+    Computer Side
+    -->
+    <div id="computer">
+        <!--ㅏ-->
+        <div class="game comBoard" style="height: 240px;">ㅏ
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+        </div>
+        <!--ㅗ-->
+        <div class="game comBoard" style="height: 240px;">ㅗ
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+            <div class="comCard"></div>
+        </div>
+    </div>
+    <br>
+    <div id="lifeStatus"> User Life = <span class="count">2</span></div>
+    <div id="userScore"> User Score = <span class="count">0</span></div>
+    <div id="comScore"> Com Score = <span class="count">0</span></div>
+    <button id="33">3X3</button>
+    <button id="44">4X4</button>
+    <div>
+        <div style="display: inline-block;" id="cards">
+            <table border="1px" class="cardTable">
+                <tr>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                    <td class="card">
+                        <div class="front" style="background-color: greenyellow">앞면</div>
+                        <div class="back">
+                            <img src="" class="image">
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+    <table>
+        <tr height : 30px>
+            <td>
+                <button class="button" id="oButton">O 버튼</button>
+
+
+            </td>
+            <td>
+                <button class="button" id="xButton">X 버튼</button>
+            </td>
+        </tr>
+    </table>
+    User Side
+    <div id="user">
+        <!--ㅏ-->
+        <div class="game userBoard" style="height: 240px;">ㅏ
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+        </div>
+        <!--ㅗ-->
+        <div class="game userBoard" style="height: 240px;">ㅗ
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+            <div class="userCard"></div>
+        </div>
+    </div>
+    <button id="men">Show Tooltips</button><br><br>
+    <script>
+        let show = false;
+        $('#men').on('click', function() {
+            if (show === false) {
+                $('.menTable').show();
+                show = true;
+                $('#men').text("Hide ToolTips");
+            } else {
+                $('.menTable').hide();
+                $('#men').text("Show ToolTips");
+                show = false;
+            }
+        });
+    </script>
+    <div class="menTable">
+        <table border="2px" width="600px" class="tooltip">
+            <th align="center" class="tooltip">카드 뒤집기게임 진행 메뉴얼</th>
+            <tr height="50px">
+                <td class="tooltip">
+                    처음 시작시, 3X3 을 할지 4X4를 할지 선택. ( 한번 클릭시 두개다 사라지고 카드가 나옴 )<br>
+                    3X3 클릭 시, ㅏ 음소 4개, ㅗ음소3개를 랜덤으로 골라서 삭제 한 후, 카드 랜덤 배치<br>
+                    4X4 클릭 시, 16개 카드를 랜덤으로 섞어서, 배치 한 후 카드를 배치<br>
+                </td>
+            </tr>
+            <tr>
+                <td class="tooltip">
+                    처음으로, 유저의 차례가 시작<br>
+                    카드를 클릭시, 카드를 뒤집으며, 해당카드의 음성을 재생<br>
+                    두 개의 카드를 골랐을시, 다른 것을 클릭 할 수 없고, O X 버튼이 팝업되어서 선택<br><br>
+                    음소가 같고<br>
+                    O 선택 시, 카드의 drag 기능이 활성화됨 [ 선택된 카드 외 다른 카드는 잠김]<br>
+                    알맞게 배치된 경우, 해당 자리에 카드가 위치하게됨<br>
+                    자리에 이미 카드가 있는경우 -> 근처 빈자리 찾아서 자리잡음<br>
+                    맞지 않게 배치된 경우, 드래그 되었던 카드가 다시 제자리로 돌아감<br>
+                    두번 틀린 경우 두개의 카드가 본래자리로 돌아가서, 뒤집히고 유저 턴 종료<br>
+                    두 카드 다 알맞게 배치된 경우 -> 유저의 점수 +2 후 유저 턴 종료<br>
+                    X 선택 시, 카드를 뒤집고, 유저 턴 종료<br><br>
+                    음소가 다르고<br>
+                    O 선택 시, 카드를 뒤집고, 유저 턴 종료<br>
+                    X 선택 시, 카드를 뒤집고, userlife -1 후, 다시한번 플레이. userlife가 0이 될시 턴 종료<br>
+                </td>
+            </tr>
+            <tr>
+                <td class="tooltip">
+                    유저 턴 종료시, 2초뒤 컴퓨터 차례로 넘어감<br>
+                    드랍되지않은 카드중 랜덤한 카드 두장을 2초 간격으로 선택하여 카드를 뒤집고 음성을 읽어줌<br>
+                    선택된 두 카드의 음소가<br>
+                    같을 경우, 뒤집힌 카드의 음소와 알맞은 칸으로 카드들이 이동, 컴퓨터 점수+2 후<br>
+                    컴퓨터 턴 종료<br>
+                    다를 경우, 뒤집었던 카드를 다시 뒤집고, 컴퓨터 턴 종료<br>
+                </td>
+            </tr>
+            <tr>
+                <td class="tooltip">
+                    게임 종료 조건
+                    3X3 -> 드랍된 카드가 8장이 되었을때<br>
+                    2초뒤 마지막 카드를 뒤집으며 음성을 읽어주고 게임이 끝남<br>
+                    4X4 -> 드랍된 카드가 16장일 경우<br>
+                    유저와 컴퓨터의 점수를 비교하여 승패를 가림<br>
+                </td>
+            </tr>
+        </table>
+<br><br><br><br><br><br>
+
+        <table border="2px" width="600px" class="tooltip">
+            <th colspan="2" align="center" class="tooltip">카드 뒤집기게임 음성 시나리오</th>
+            <tr height="50px">
+                <td colspan="2" align="center" class="tooltip">
+                    처음 시작 시, 3X3 을 할지 4X4를 할지 정하도록합니다.
+                    (단, 고르는 기회는 한번입니다.)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center" class="tooltip">
+                    유저<br>
+                    <hr><br>
+                    카드 두개를 클릭하면 OX 버튼을 고르라는 음성 송출 <br>
+                    음소가 같을경우 -> O 클릭 -> 음소가 맞음을 확인시켜주고,( 드래그하세요 음성 송출)<br>
+                    알맞게 드래그 한 경우 -> 다음 카드를 드래그 해주세요<br>
+                    맞지않게 드래그 한경우 -> 한번 더 해보세요<br>
+                    두번 틀린 경우 -> 드래그 한것은 (음소), 드랍 해야할 곳은 (음소) ->(lifeZero)<br>
+                    두 카드를 알맞게 배치한 경우, 잘했다고 칭찬 해 주고 -> (lifeZero)<br>
+                    음소가 같을경우 -> X 클릭 -> 음소가 같은것을 확인시켜주고 -> (lifeZero)<br>
+                    음소가 다를 경우 -> O 클릭 ->음소가 다른것을 확인시켜주고, 한번의 기회를 추가 부여<br>
+                    한번의 기회를 추가 부여했지만, 또다시 틀린 경우 -> (lifeZero)<br>
+                    음소가 다를 경우 -> X 클릭 == 음소가 다른것을 확인시켜주고, (lifeZero)<br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center" class="tooltip">
+                    컴퓨터<br>
+                    <hr>
+                    (lifeZero -> 두번째 =)lifeZero 함수 에 comTurn 이전에 컴퓨터 차례임을 알림<br>
+                    컴퓨터가 두개의 카드를 고름<br>
+                    두 카드의 음소가 같음 -> 컴퓨터가 맞췄음을 알림 -> (comOver)<br>
+                    두 카드의 음소가 다름 -> 컴퓨터의 턴이 끝났음을 알림 -> (comOver)<br>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%" class="tooltip">
+                    게임 종료 시 점수를 비교할때, <br>
+                    유저 의 점수가 더 많을 경우<br>
+                    유저가 이겼음을 알림<br><br>
+                    컴퓨터 의 점수가 더 많을 경우<br>
+                    컴퓨터가 이겼음을 알림<br><br>
+                    둘의 점수가 같을 경우<br>
+                    무승부 임을 알림
+
+                </td>
+                <td width="50%" class="tooltip">
+                    lifeZero<br>
+                    = 유저의 차례가 끝이났음을 알림<br>
+                    = 설정한 타이머가 끝난 후 , 이제 컴퓨터가 할 차례임을 알림<br><br>
+
+                    comOver<br>
+                    =컴퓨터의 차례가 끝났음을 알림<br>
+                    =설정한 타이머가 끝난 후, 이제 유저의 차례임을 알림<br>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script src="js/scripts.js"></script>
+</body></html>
