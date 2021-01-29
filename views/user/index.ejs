@@ -1,0 +1,15 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <a href="/board">boards</a>
+        <a href="/users">user</a>
+        <%= title%>
+        <%= name%>
+        <%= id%>
+        <% if(name){ %>
+            <a href="/users/<%=id%>">회원 정보수정</a>
+            <a href="/users/logou">로그아웃</a>
+        <% } %>
+    </body>
+</html>

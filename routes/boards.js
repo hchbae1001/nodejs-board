@@ -1,9 +1,19 @@
 var express = require('express');
 var router = express.Router();
+const BoardController = require('../controllers/board-controller');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express133232' });
+router.get('/new', function(req, res) {
+  res.render('board/new');
 });
+router.get('/:boardId', BoardController.getBoard)
+router.get('/', BoardController.getBoards)
+router.post('/', BoardController.insertBoard)
+router.patch('/:boardId', BoardController.updateBoard)
+router.delete('/:boardId', BoardController.deleteBoard)
 
-module.exports = router;
+// router.get('/:boardId/comment', BoardController.getComments)
+// router.post('/:boardId/comment', BoardController.insertComment)
+// router.patch('/:boardId/comment/:commentId', BoardController.updateComment)
+// router.delete('/:boardId/comment/:commentId', BoardController.deleteComment)
+
+module.exports = router

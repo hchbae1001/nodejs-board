@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>User View Test Page</title>
+    </head>
+    <body>
+        <a href="/">처음</a>
+        <div>
+                <form action="/users/<%= data.id%>?_method=patch" method="POST">
+                    ID = <input type="text" name="id" value="<%= data.id%>" readonly><br>
+                    Email = <input type="email" name ="email" value="<%= data.email%>"><br>
+                    Name = <input type="text" name="name" value="<%= data.name%>"><br>
+                    gender = <% if(data.gender==='남'){ %>
+                        남<input type="radio" name="gender" value="남" checked> 여<input type="radio" name="gender" value="여"><br>
+                    <% }else{ %>
+                        남<input type="radio" name="gender" value="남"> 여<input type="radio" name="gender" value="여" checked><br>
+                    <% } %>
+                    password : <input type="password" name="password" value=""><br>
+                    
+                    <input type="submit" value="수정">
+                </form>
+                <form action="/users/<%= data.id%>?_method=DELETE" method="POST">
+                    <input type="submit" value="삭제">
+                </form>
+        </div>
+    </body>
+</html>
