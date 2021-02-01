@@ -39,32 +39,59 @@ exports.deleteBoard = async (boardId) => {
     }
 }
 
-exports.deleteComment = async (boardId, commentId) => {
-    let conn = await pool.getConnection()
-    try {
-        await conn.beginTransaction()
-
-        let del = await conn.query(BoardQuery.deleteComment, [commentId])
-        if (del[0].affectedRows == 1) {
-            let upd = await conn.query(BoardQuery.minusCommentCnt, [boardId])
-        }
-        await conn.commit()
-
-        return del[0]
-    } catch (err) {
-        conn.rollback()
-        console.log(err)
-        throw Error(err)
-    } finally {
-        conn.release()
-    }
-}
 exports.updateBoard = async (boardId,title,content) => {
     try{
         let update = await pool.query(BoardQuery.updateBoard, [title, content, boardId])
         return update[0]
     }catch(err){
-        conn.rollback
+        console.log(err)
+        throw Error(err)
+    }
+}
+exports.getComment = async(boardId) =>{
+    try{
+        let data = await pool.query(BoardQuery.getComment,boardId)
+        return data[0]
+    }catch(err){
+        console.log(err)
+        throw Error(err)
+    }
+}
+exports.insertComment = async(boardId,comment) =>{
+    try{
+        let data = await pool.query(BoardQuery.insertComment, {board_id:boardId, board_comment:comment})
+        return data[0]
+    }catch(err){
+        console.log(err)
+        throw Error(err)
+    }
+}
+
+exports.viewComment = async(commentId) =>{
+    try{
+        let data = await pool.query(BoardQuery.viewComment,commentId)
+        return data[0]
+    }catch(err){
+        console.log(err)
+        throw Error(err)
+    }
+}
+
+exports.updateComment = async(comment, commentId) =>{
+    try{
+        let data = await pool.query(BoardQuery.updateComment, [comment, commentId])
+        return data[0]
+    }catch(err){
+        console.log(err)
+        throw Error(err)
+    }
+}
+
+exports.deleteComment = async(commentId) =>{
+    try{
+        let data = await pool.query(BoardQuery.deleteComment, commentId)
+        return data[0]
+    }catch(err){
         console.log(err)
         throw Error(err)
     }

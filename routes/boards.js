@@ -11,9 +11,9 @@ router.post('/', BoardController.insertBoard)
 router.patch('/:boardId', BoardController.updateBoard)
 router.delete('/:boardId', BoardController.deleteBoard)
 
-// router.get('/:boardId/comment', BoardController.getComments)
-// router.post('/:boardId/comment', BoardController.insertComment)
-// router.patch('/:boardId/comment/:commentId', BoardController.updateComment)
-// router.delete('/:boardId/comment/:commentId', BoardController.deleteComment)
+router.get('/comment/:commentId', BoardController.viewComment)
+router.post('/:boardId/comment', BoardController.insertComment)
+router.patch('/comment/:commentId', BoardController.updateComment)
+router.delete('/comment/:commentId', BoardController.deleteComment)
 
 module.exports = router
