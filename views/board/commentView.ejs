@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>board Write Test Page</title>
+    </head>
+    <body>
+        <a href="/board">목록</a>
+        <a href="/">처음</a>
+        <div>
+                <form action="/board/comment/<%=data[0].comment_id%>?_method=patch" method="POST">
+                    <input type="hidden" name = "board_id" value="<%= data[0].board_id%>">
+                    id: <input type="number" name="comment_id" value="<%= data[0].comment_id%>" readonly><br>
+                comment: <input type="text" name="comment" value="<%= data[0].board_comment%>"><br>
+                    <input type="submit" value="수정">
+                </form>
+                <form action="/board/comment/<%= data[0].comment_id%>?_method=DELETE" method="POST">
+                    <input type="hidden" name="board_id" value="<%=data[0].board_id%>">
+                    <input type="submit" value="삭제">
+                </form>
+        </div>
+    </body>
+</html>
