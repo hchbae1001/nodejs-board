@@ -6,47 +6,48 @@
         <a href="/board">목록</a>
         <a href="/">처음</a>
         <div>
-                
-                <form action="/board/<%= data[0].board_id%>?_method=patch" method="POST">
-                    id: <%= data[0].board_id%><br>
-                title: <input type="text" name="title" value="<%= data[0].title%>"><br>
-                content: <input type="textarea" name="content" value="<%= data[0].content%>"><br> 
-                    <input type="submit" value="수정">
-                </form>
-                <form action="/board/<%= data[0].board_id%>?_method=DELETE" method="POST">
-                    <input type="submit" value="삭제">
-                </form>
+            <form action="/board/<%= data.board_id%>?_method=patch" method="POST">
+                id: <%= data.board_id%><br>
+                write by : <%= data.id%><br>
+            title: <input type="text" name="title" value="<%= data.title%>"><br>
+            content: <input type="textarea" name="content" value="<%= data.content%>"><br> 
+                <input type="submit" value="수정">
+            </form>
+            <form action="/board/<%= data.board_id%>?_method=DELETE" method="POST">
+                <input type="submit" value="삭제">
+            </form>
 
-                <form method="POST" action="/board/<%= data[0].board_id%>/comment">
-                    Content : <input type="textarea" width="200" height="50px" name="comment"><br>
-                    <input type="submit" value="댓글작성">
-                </form>
+            <form method="POST" action="/board/<%= data.board_id%>/comment">
+                Content : <input type="textarea" width="200" height="50px" name="comment"><br>
+                <input type="submit" value="댓글작성">
+            </form>
 
-                <% if(comment.length > 0){ %>
-                <div>
-                    <table border="1">
-                        <tr>
-                            <td align="center" width="100 px">
-                                Comment ID
-                            </td>
-                            <td align="center" width="400 px">
-                                comment content
-                            </td>
-                        </tr>
-                    
-                    <% for(let i = 0; i < comment.length; i++){ %>
-                        <tr>
-                            <td align="center">
-                                <%= comment[i].comment_id%>
-                            </td>
-                            <td align="center">
-                                <a href="/board/comment/<%= comment[i].comment_id%>"><%= comment[i].board_comment%></a>
-                            </td>
-                    </tr>
-                        <% } %>
-                    </table>
-                </div>
-                <% } %>
+
         </div>
+        <% if(comment.length > 0){ %>
+            <div>
+                <table border="1">
+                    <tr>
+                        <td align="center" width="100 px">
+                            Comment ID
+                        </td>
+                        <td align="center" width="400 px">
+                            comment content
+                        </td>
+                    </tr>
+                
+                <% for(let i = 0; i < comment.length; i++){ %>
+                    <tr>
+                        <td align="center">
+                            <%= comment[i].comment_id%>
+                        </td>
+                        <td align="center">
+                            <a href="/board/comment/<%= comment[i].comment_id%>"><%= comment[i].board_comment%></a>
+                        </td>
+                </tr>
+                    <% } %>
+                </table>
+            </div>
+            <% } %>
     </body>
 </html>

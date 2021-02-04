@@ -1,12 +1,13 @@
+const session = require('express-session')
+const { write } = require('fs')
 const { addColors } = require('winston/lib/winston/config')
-const pool = require('../database/pool')
-const BoardService = require('../services/board-service')
+const models = require('../models')
 
 exports.getBoard = async (req, res) => {
     let { boardId } = req.params
     try {
-        let rows = await BoardService.getBoard(boardId)
-        let comment = await BoardService.getComment(boardId)
+        let rows = await models.board.findOne({where : {board_id:boardId}})
+        let comment = await models.board_comment.findAll({where: {board_id:boardId}})
         res.render('board/view',{ data: rows, comment: comment})
     } catch (err) {
         return res.status(500).json(err)
@@ -15,17 +16,22 @@ exports.getBoard = async (req, res) => {
 
 exports.getBoards = async (req, res) => {
     try{
-        let rows = await BoardService.getBoards()
-        // let data = await BoardService.getComment()
+        let rows = await models.board.findAll()
         res.render('board/board', {data:rows});
     }catch(err){
         return res.status(500).json(err)
     }
 }
 exports.insertBoard = async(req,res) =>{
+    sess = req.session
     let { title,content } = req.body
     try{
-        await BoardService.insertBoard(title,content)
+        if(sess.user_id){
+            writer = sess.user_id
+            await models.board.create({title:title,content:content,id:writer})
+        }else{
+            await models.board.create({title:title, content:content})
+        }
         res.redirect('/board')
     }catch(err){
         return res.status(500).json(err)
@@ -34,39 +40,32 @@ exports.insertBoard = async(req,res) =>{
 exports.deleteBoard = async(req,res) =>{
     let { boardId } = req.params
     try{
-        await BoardService.deleteBoard(boardId)
-        res.redirect('/board')
-    }catch(err){
-        return res.status(500).json(err)
-    }
-}
-exports.updateBoard = async(req,res) =>{
-    let { boardId } = req.params
-    let {title, content} = req.body
-    try{
-        await BoardService.updateBoard(boardId, title, content)
+        await models.board.destroy({where:{board_id:boardId}})
         res.redirect('/board')
     }catch(err){
         return res.status(500).json(err)
     }
 }
 
-exports.deleteComment = async (req, res, next) => {
-    let { boardId, commentId } = req.params
-    try {
-        let del = await BoardService.deleteComment(boardId, commentId)
-        return res.json(del)
-    } catch (err) {
+exports.updateBoard = async(req,res) =>{
+    let { boardId } = req.params
+    let {title, content} = req.body
+    try{
+        await models.board.update({title:title, content:content},{where:{board_id:boardId}})
+        res.redirect('/board')
+    }catch(err){
         return res.status(500).json(err)
     }
 }
+
+
 
 exports.insertComment = async (req,res) =>{
     let {boardId} = req.params
     let {comment} = req.body
     let moveBack = '/board/' + boardId
     try{
-        await BoardService.insertComment(boardId,comment)
+        await models.board_comment.create({board_id:boardId, board_comment:comment})
         return res.redirect(moveBack)
     }catch(err){
         return res.status(500).json(err)
@@ -75,7 +74,9 @@ exports.insertComment = async (req,res) =>{
 exports.viewComment = async (req,res) => {
     let {commentId} = req.params
     try{
-        let comment = await BoardService.viewComment(commentId)
+        let comment = await models.board_comment.findOne({
+            where : {comment_id:commentId}
+        })
         return res.render('board/commentView',{data: comment})
     }catch(err){
         return res.status(500).json(err)
@@ -87,7 +88,7 @@ exports.updateComment = async (req,res) => {
     let {comment,board_id} = req.body
     let moveback = '/board/'+ board_id
     try{
-        await BoardService.updateComment(comment,commentId)
+        await models.board_comment.update({board_comment:comment},{where:{comment_id:commentId}})
         return res.redirect(moveback)
     }catch(err){
         return res.status(500).json(err)
@@ -99,7 +100,7 @@ exports.deleteComment = async (req,res) => {
     let {board_id} = req.body
     let moveback = '/board/' + board_id
     try{
-        await BoardService.deleteComment(commentId)
+        await models.board_comment.destroy({where: {comment_id:commentId}})
         return res.redirect(moveback)
     }catch(err){
         return res.status(500).json(err)

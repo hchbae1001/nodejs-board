@@ -1,11 +1,11 @@
-const userService = require('../services/user-service')
 const bcrypt = require('bcrypt')
+const { addColors } = require('winston/lib/winston/config')
+const models = require('../models')
 
 exports.userLogin = async (req,res) => {
     let { id,pwd } = req.body
     try{
-        let data = await userService.userLogin(id)
-        let row = data[0]
+        let row = await models.user.findOne({where : {id:id}})
         const pwdsame = bcrypt.compareSync(pwd,row.password);
         if(pwdsame === true && id === row.id){
             sess = req.session
@@ -25,8 +25,7 @@ exports.userView = async (req,res) => {
     const {id} = req.params
     if(id === sess.user_id){
       try{
-        let data = await userService.userLogin(id)
-        let row = data[0]
+        let row = await models.user.findOne({where:{id:id}})
         res.render('user/view', {data: row})
       }catch(err){
         return res.status(500).json(err)
@@ -39,7 +38,7 @@ exports.userUpdate = async (req,res) =>{
     const {id,email,name,gender,password}=req.body
     const encodedPwd = bcrypt.hashSync(password,10)
     try{
-        await userService.userUpdate(email,name,gender,encodedPwd,id)
+        await models.user.update({email:email,name:name,gender:gender,password:encodedPwd},{where:{id:id}})
         await req.session.destroy(function(){
             req.session;
         });
@@ -51,7 +50,7 @@ exports.userUpdate = async (req,res) =>{
 exports.userDelete = async (req,res) =>{
     const { id } = req.params
     try{
-        await userService.userDelete(id)
+        await models.user.destroy({where:{id:id}})
         await req.session.destroy(function(){
             req.session;
         })
@@ -81,7 +80,7 @@ exports.userInsert = async (req,res) =>{
     const {id,email,name,gender,password} = req.body
     const encodedPassword = bcrypt.hashSync(password, 10)
     try{
-      await userService.userInsert(id,email,name,gender,encodedPassword)
+      await models.user.create({id:id, email:email, name:name, gender:gender,password:encodedPassword})
       res.redirect('/')
     }catch(err){
       return res.status(500).json(err)

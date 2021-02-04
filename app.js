@@ -13,6 +13,8 @@ var methodOverride = require('method-override');
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 var bcrypt = require('bcrypt');
+var sequelize = require('./models').sequelize;
+// sequelize.sync();
 app.use(session({
   secret: 'bae',
   resave: false,
